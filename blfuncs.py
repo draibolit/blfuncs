@@ -160,3 +160,50 @@ def extrudeVertsToplane(name, fromobj, magnitude ):
     new_vertices = vertices + verNorms*magnitude
     obj = newobj(name, location, new_vertices, [], polygons)
     return obj
+
+
+def getselectedmesh(obj):
+    '''
+    Return mesh data from selected mesh 
+    Ouput new mesh
+    Return values : 
+         vertices: a list of nx3
+         EdgesIdx: a list of nx2 indexs of vertices
+         FacesIdx: a list of non uniform indexs of vertices per face
+
+    '''
+
+    bpy.ops.object.mode_set(mode='OBJECT')
+
+    if obj == None:
+        log.error("function getselectedmesh: No obj was selected")
+
+    selectedVers = [v for v in obj.data.vertices if \
+            v.select]
+
+    if selectedVers==[] :
+        log.error("function getselectedmesh: No vertice was selected")
+
+    selectedEdges = [e for e in obj.data.edges if \
+            e.select] 
+    selectedFaces = [f for f in obj.data.polygons if \
+            f.select]
+    #Convert them all to numpy array, except to list in polygons
+    npselectedVers=np.array([v.co for v in selectedVers])
+    npselectedEdges=np.array([e.vertices for e in selectedEdges])
+    lsselectedFaces=[f.vertices for f in selectedFaces]
+
+    versIndex=[selectedVers[i].index for i in range(len(selectedVers))]
+    #convert new edge and face index for verts
+    EdgesIdx=[]
+    for edge in npselectedEdges:
+        EdgesIdx.append([versIndex.index(edge[0]), \
+                     versIndex.index(edge[1])])
+    FacesIdx=[]
+    for face in lsselectedFaces:
+        pol=[]
+        for i in range(len(face)):
+            ver=versIndex.index(face[i])
+            pol.append(ver)
+        FacesIdx.append(pol)
+    return npselectedVers, EdgesIdx, FacesIdx
