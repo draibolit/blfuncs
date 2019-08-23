@@ -1,3 +1,6 @@
+#use with blender 2.8.0
+import numpy as np
+
 def newobj(name, location, vertices, edge, polygons):
     '''
     create obj base on local vertice coordination
