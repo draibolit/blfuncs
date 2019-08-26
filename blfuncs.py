@@ -30,6 +30,7 @@ def getFaceNormals(vertices, pols):
     norms = np.sqrt(np.sum(normals*normals, axis=1))
     return normals/norms[:, np.newaxis]
 
+
 def getVertNormals(polygons, faceNorms):
     """ 
     Returns normals for each verts of mesh 
@@ -37,12 +38,11 @@ def getVertNormals(polygons, faceNorms):
     """
     normVectors = [] #[verticeNO, meansNOrm[n,3]numpyarray]
     for count, pol in enumerate(polygons):
-        if count == 0:
-            for ver in pol:
+        for ver in pol:
+            #check if existed the ver
+            if len(normVectors)==0:
                 normVectors.append([ver, faceNorms[count]])
-        else:
-            for ver in pol:
-                #check if ver is in normVectors[0] if count >=1
+            else:
                 list0 = [x[0] for x in normVectors]
                 if ver in list0: 
                     idx=list0.index(ver)
@@ -50,7 +50,9 @@ def getVertNormals(polygons, faceNorms):
                         [normVectors[idx][1], faceNorms[count]])
                 else:
                     normVectors.append([ver, faceNorms[count]])
-    normVectors = sorted(normVectors)
+    #normVectors = sorted(normVectors)
+    #normVectors = sorted(normVectors, key=lambda x : x[0])
+    normVectors.sort(key=lambda x : x[0])
 
     #mean all normal vectors
     meanarray = []
