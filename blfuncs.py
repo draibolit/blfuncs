@@ -16,6 +16,33 @@ def newobj(name, location, vertices, edge, polygons):
     newmesh.update(calc_edges=True)
     return newobject
 
+def convertContIdxVer(vertices, pols, fromID): 
+    '''convert from 
+                     uncontinous index vertices np.array[idx, x, y ,z] 
+                     and pols [ver1, ver2,...] (idx of ver could > len(vertices)
+            to
+                    continuous index vertices fromID np.array[idx,x,y,z]
+                     max idx of ver in pols = len(vertices)
+
+       requirements:
+                    vertices: ndarray 
+                    and pols: lists
+    '''
+    tempPols=[]
+    for pol in pols:
+        tempPol=[]
+        for ver in pol:
+            #tempPol.append(vertices.index(ver)) #if vertices is list 
+            tempPol.append(int(np.where(vertices==ver)[0]))
+        tempPols.append(tempPol)
+    
+    copy_vertices = np.copy(vertices)
+    copy_vertices[:,0] = [ idx for idx in range(fromID, fromID +len(copy_vertices))]
+    contIdxVers=copy_vertices
+    contIdxPols=tempPols 
+    return contIdxVers, contIdxPols
+
+
 def getFaceNormals(vertices, pols):
     """ 
     Returns normals for each facet of mesh 
