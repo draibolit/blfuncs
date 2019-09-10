@@ -18,7 +18,8 @@ def newobj(name, location, vertices, edge, polygons):
 
 def convertContIdxVer(vertices, pols, fromID): 
     '''convert from 
-                     uncontinous index vertices np.array[idx, x, y ,z] 
+                     uncontinous index vertices np.array[id, x, y ,z] 
+                                       tested: with DF[id, x, y, z]
                      and pols [ver1, ver2,...] (idx of ver could > len(vertices)
             to
                     continuous index vertices fromID np.array[idx,x,y,z]
@@ -33,7 +34,9 @@ def convertContIdxVer(vertices, pols, fromID):
         tempPol=[]
         for ver in pol:
             #tempPol.append(vertices.index(ver)) #if vertices is list 
-            tempPol.append(int(np.where(vertices==ver)[0]))
+            tempPol.append(int(np.where(vertices==ver)[0])) #numpy and DF
+            #tempPol.append(int(np.where(vertices.id==ver)[0])) #DF
+            #raised error when np.where return not found --> ?
         tempPols.append(tempPol)
     
     copy_vertices = np.copy(vertices)
